@@ -102,7 +102,7 @@ def eraseBG(file, tolerance):
     input_image.save(file)
 
 # example:
-# ./aseprite-converter.py /Users/RobertoBenigni/fotoPiedi/ /Users/GianniMorandi/piattiDiMerda/ -t=100
+# ./aseprite-converter.py /path/to/aseprite/ /path/to/png/ -t=100
 
 if __name__ == "__main__":
     removeBG = True
