@@ -6,12 +6,12 @@
 
 // Clock enable
 #define RCC_AHB1ENR     *(volatile uint32_t *)(RCC_BASE + 0x30)         //(section 6.3.9)
+#define RCC_GPIOAEN     (1 << 0)                                        //Enable GPIOA clock (section 6.3.22)
 
 //GPIOA config
 #define GPIOA_MODER     *(volatile uint32_t *)(GPIOA_BASE + 0x00)       //pin mode      (section 8.4.1)
 #define GPIOA_ODR       *(volatile uint32_t *)(GPIOA_BASE + 0x14)       //pin value     (section 8.4.6)
 
-#define RCC_GPIOAEN     (1 << 0)    //Enable GPIOA clock (section 6.3.22)
 #define GPIOA5          (1 << 5)    //PA7 bit (section 8.4.11)
 
 void main(void) {
