@@ -22,6 +22,17 @@ static inline uint16_t hammingLength(uint16_t packageLength) {
 }
 
 /**
+ * @fn revertHammingLength
+ * @brief returns number of bytes used after decoding
+ * @note If parameter isn't a multiple of 4 it cracks, but idc
+ * @param hammingPackageLength encoded package length
+ * @return uint16_t number of bytes (uint8_t) used
+*/
+static inline uint16_t revertHammingLength(uint16_t hammingPackageLength) {
+    return ((((hammingPackageLength / 4) * 26) - 25) / 8);
+}
+
+/**
  * @fn encodeHamming
  * @brief Encoder for hamming(32, 26)
  * @param package package with the uint8_t data
@@ -29,8 +40,6 @@ static inline uint16_t hammingLength(uint16_t packageLength) {
  * @return uint8_t* Pointer to the encoded array (size can be calculated with hammingLength())
 */
 uint8_t* encodeHamming(uint8_t* package, uint16_t packageLength) {
-    uint16_t remainingBits = packageLength << 3;
-
     uint16_t mallocSize = hammingLength(packageLength);
     uint8_t* hamming = (uint8_t*)calloc(1, mallocSize);
 
@@ -86,8 +95,28 @@ uint8_t* encodeHamming(uint8_t* package, uint16_t packageLength) {
     return hamming;
 }
 
-int decodeHamming(uint8_t* package) {
-    return 0;
+uint8_t* decodeHamming(uint8_t* hammingPackage, uint16_t packageLength) {
+    uint16_t callocSize = revertHammingLength(packageLength);
+    uint8_t* package = (uint8_t*)calloc(1, callocSize);
+
+    uint16_t blockIndex = 0;                  //I think I'll need it here too
+    
+    for (int i = 0; i < packageLength; i++) {
+        //Error checking
+            //Repeat the encoding and compare with parity
+
+        //If double error -> return here
+
+        //If error
+            //Error correction
+                //Apply bit flip in affected position
+        //finally
+        //Decoding
+
+        //Copy value in return array
+        
+    }
+    return package;
 }
 
 int main() {
