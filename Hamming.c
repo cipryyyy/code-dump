@@ -98,34 +98,75 @@ uint8_t* encodeHamming(uint8_t* package, uint16_t packageLength) {
 uint8_t* decodeHamming(uint8_t* hammingPackage, uint16_t packageLength) {
     uint16_t callocSize = revertHammingLength(packageLength);
     uint8_t* package = (uint8_t*)calloc(1, callocSize);
-
-    uint16_t blockIndex = 0;                  //I think I'll need it here too
+    uint16_t blockIndex = 0;
     
-    for (int i = 0; i < packageLength; i++) {
+    for (int i = 0; i < packageLength / 4; i++) {
+        uint32_t rawPackage = 0;
+        uint32_t dataPackage = 0;
+        memcpy(&rawPackage, &hammingPackage[blockIndex * 4], sizeof(uint32_t));
+
+        uint8_t SECtarget = 0;
+        uint8_t globalParity = 0;
+
         //Error checking
-            //Repeat the encoding and compare with parity
+        for (int i = 1; i < 32; i++) {
+            if ((rawPackage >> i) & 1) {
+                SECtarget ^= i;
+            }
+        }
 
-        //If double error -> return here
+        //Check global parity
+        for (int i = 0; i < 32; i++) {
+            if ((rawPackage >> i) & 1) {
+                globalParity ^= 1;
+            }
+        }
 
-        //If error
-            //Error correction
-                //Apply bit flip in affected position
-        //finally
-        //Decoding
+        if (SECtarget != 0) {
+            if (globalParity != 0) {
+                // SEC, flip affected bit
+                rawPackage ^= (1UL << SECtarget);
+            } else {
+                // DED, skip package
+                continue; 
+            }
+        }
 
-        //Copy value in return array
-        
+        //ᓚᘏᗢᓚᘏᗢᓚᘏᗢᓚᘏᗢᓚᘏᗢᓚᘏᗢᓚᘏᗢ
+        //Package prep
+        uint16_t byteIndex = (blockIndex * 26) / 8;
+        uint16_t byteOffset = (blockIndex * 26) % 8;
+
+        uint64_t writeData = ((uint64_t)dataPackage) << byteOffset;
+
+        for (int j = 0; j < 5; j++) {
+            if (byteIndex + j < callocSize) {
+                package[byteIndex + j] |= (uint8_t)((writeData >> (8 * j)) & 0xFF);
+            }
+        }
+        blockIndex++;
     }
     return package;
 }
 
 int main() {
     uint8_t package[] = "lorem ipsum";
-    uint8_t* hammingPackage = encodeHamming(package, sizeof(package));
-    for (int i = 0; i < hammingLength(sizeof(package)) * 1; i++) {
-        for (int j = 0; j < 8; j++){
-            printf("%d", (hammingPackage[i] >> j) & 0x1);
-        }
-        printf("\n");
+    uint16_t packageSize = sizeof(package);
+
+    uint16_t encodedSize = hammingLength(packageSize);
+    uint8_t* hammingPackage = encodeHamming(package, packageSize);
+
+    //TODO Apply bit flip to random packages
+
+    uint8_t* decoded = decodeHamming(hammingPackage, encodedSize);
+
+    for(int i = 0; i < packageSize; i++) {
+        putchar(decoded[i]);
     }
+    putchar('\n');
+
+    free(hammingPackage);
+    free(decoded);
+
+    return 0;
 }
