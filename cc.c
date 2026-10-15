@@ -11,9 +11,7 @@ void cc_fwd(char* src_path, char* dst_path, uint8_t rot)
     char temp[2] = {'0', '\x0'}; 
 
     if (src == NULL)        //check if source exists
-    {
         printf("%s does not exist\r\n", src_path);
-    }
                 
     while ((ch = fgetc(src)) != EOF)        // ᓚᘏᗢ < zzᶻᶻᶻᶻ
     {
@@ -35,14 +33,10 @@ void cc_bwd(char* path, uint8_t rot)
     char ch;
 
     if (src == NULL)
-    {
         printf("%s does not exist\r\n", path);
-    }
 
     while ((ch = fgetc(src)) != EOF)
-    {
         printf("%c", ch - rot);     //Revert edit
-    }   
 
     fclose(src);
     return;
